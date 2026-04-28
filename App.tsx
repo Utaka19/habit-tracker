@@ -1,5 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import { useState } from "react";
 
 type Habit = {
   id: string;
@@ -8,14 +9,21 @@ type Habit = {
 };
 
 export default function App() {
-  // 仮データ（あとで動的にする）
-  const habits: Habit[] = [
+  const [habits, setHabits] = useState<Habit[]>([
     { id: "1", name: "筋トレ", done: false },
     { id: "2", name: "英語", done: true },
     { id: "3", name: "読書", done: false },
-  ];
+  ]);
 
   const today = new Date().toLocaleDateString();
+
+  const toggleHabit = (id: string) => {
+    setHabits((prev) =>
+      prev.map((habit) =>
+        habit.id === id ? { ...habit, done: !habit.done } : habit
+      )
+    );
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#121212" }}>
@@ -40,7 +48,9 @@ export default function App() {
           data={habits}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View
+            <TouchableOpacity
+              onPress={() => toggleHabit(item.id)}
+              activeOpacity={0.7}
               style={{
                 flexDirection: "row",
                 alignItems: "center",
@@ -50,7 +60,7 @@ export default function App() {
                 marginBottom: 10,
               }}
             >
-              {/* チェックボックス風 */}
+              {/* チェック */}
               <View
                 style={{
                   width: 24,
@@ -75,7 +85,7 @@ export default function App() {
               <Text style={{ color: "white", fontSize: 16 }}>
                 {item.name}
               </Text>
-            </View>
+            </TouchableOpacity>
           )}
         />
 
